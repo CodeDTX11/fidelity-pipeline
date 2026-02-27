@@ -1,0 +1,18 @@
+# Java
+target/
+build/
+.gradle/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# OS
+.DS_Store
+
+# Env files
+.env
+
+# Docker volumes
+pgdata/
