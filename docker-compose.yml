@@ -32,6 +32,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data
 
   postgres:
     image: postgres:16
@@ -42,6 +44,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      - postgres-data:/var/lib/postgresql/data
       - ./infra/sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U app -d app"]
@@ -68,3 +71,20 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/app
       SPRING_DATASOURCE_USERNAME: app
       SPRING_DATASOURCE_PASSWORD: app
+
+  producer:
+    build: ./producer
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    environment:
+      BOOTSTRAP_SERVERS: redpanda:9092
+      TOPIC: transactions.cleaned.v1
+      CSV_PATH: /data/transactions.csv
+      SOURCE_FILE: transactions.csv
+    volumes:
+      - ./producer/data:/data:ro
+
+volumes:
+  postgres-data:
+  redpanda-data:
