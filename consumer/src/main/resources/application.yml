@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: consumer
+  kafka:
+    bootstrap-servers: redpanda:9092
+    consumer:
+      group-id: transactions-consumer-group
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+    listener:
+      ack-mode: manual
+
+  datasource:
+    url: jdbc:postgresql://postgres:5432/app
+    username: app
+    password: app
