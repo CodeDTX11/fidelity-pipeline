@@ -1,0 +1,20 @@
+[project]
+name = "transactions-producer"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "CodeDTX11", email = "dm5messerly@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "confluent-kafka==2.6.1",
+    "python-dateutil==2.9.0.post0",
+]
+
+[project.scripts]
+producer = "transactions_producer.main:main"
+
+[build-system]
+requires = ["uv_build>=0.9.17,<0.10.0"]
+build-backend = "uv_build"
