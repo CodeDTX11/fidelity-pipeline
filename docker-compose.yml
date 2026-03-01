@@ -106,8 +106,31 @@ services:
     depends_on:
       - prometheus
 
+  loki:
+    image: grafana/loki:2.9.8
+    command: -config.file=/etc/loki/config.yml
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./infra/loki/loki-config.yml:/etc/loki/config.yml:ro
+      - loki-data:/loki
+
+  promtail:
+    image: grafana/promtail:3.0.0
+    environment:
+      - DOCKER_API_VERSION=1.44
+    command: -config.file=/etc/promtail/config.yml
+    volumes:
+      - ./infra/promtail/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Works on Linux; on Docker Desktop (macOS) it often still works, but if it doesn't, see note below.
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    depends_on:
+      - loki
+
 volumes:
   postgres-data:
   redpanda-data:
   prometheus-data:
   grafana-data:
+  loki-data:
