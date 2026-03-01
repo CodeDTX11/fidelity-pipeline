@@ -19,3 +19,12 @@ __pycache__/
 
 # Docker volumes
 pgdata/
+
+# Frontend
+node_modules/
+dist/
+*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
+frontend/tailwind.config.js
+frontend/tailwind.config.d.ts

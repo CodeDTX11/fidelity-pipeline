@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Monitor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main class="page-shell">
+    <section class="hero">
+        <p class="eyebrow">Fidelity Pipeline</p>
+        <h1>Transaction Monitor</h1>
+        <p class="hero-copy">
+            Live view of transaction records ingested by the consumer service.
+        </p>
+        <div class="hero-metrics">
+            <article class="metric-card">
+                <span class="metric-label">Status</span>
+                <strong id="status-pill" class="metric-value">Loading</strong>
+            </article>
+            <article class="metric-card">
+                <span class="metric-label">Rows Returned</span>
+                <strong id="row-count" class="metric-value">0</strong>
+            </article>
+            <article class="metric-card">
+                <span class="metric-label">Last Refresh</span>
+                <strong id="last-refresh" class="metric-value">Never</strong>
+            </article>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-header">
+            <div>
+                <p class="panel-eyebrow">REST API</p>
+                <h2>/api/transactions</h2>
+            </div>
+            <button id="refresh-button" class="refresh-button" type="button">Refresh</button>
+        </div>
+
+        <div id="feedback-banner" class="feedback-banner" hidden></div>
+
+        <div class="table-shell">
+            <table>
+                <thead>
+                <tr>
+                    <th>Event ID</th>
+                    <th>Timestamp</th>
+                    <th>Customer</th>
+                    <th>Symbol</th>
+                    <th>Side</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Source File</th>
+                </tr>
+                </thead>
+                <tbody id="transactions-body">
+                <tr class="placeholder-row">
+                    <td colspan="8">Loading transactions...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<script src="/app.js"></script>
+</body>
+</html>
