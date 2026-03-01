@@ -16,3 +16,12 @@ spring:
     url: jdbc:postgresql://postgres:5432/app
     username: app
     password: app
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}

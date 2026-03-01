@@ -59,6 +59,8 @@ services:
         condition: service_healthy
       postgres:
         condition: service_healthy
+    ports:
+      - "8080:8080"
     environment:
       # Kafka (container-to-container)
       SPRING_KAFKA_BOOTSTRAP_SERVERS: redpanda:9092
@@ -85,6 +87,27 @@ services:
     volumes:
       - ./producer/data:/data:ro
 
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    depends_on:
+      - consumer
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
 volumes:
   postgres-data:
   redpanda-data:
+  prometheus-data:
+  grafana-data:
