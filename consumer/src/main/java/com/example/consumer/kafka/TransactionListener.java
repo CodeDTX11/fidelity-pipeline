@@ -1,8 +1,7 @@
 package com.example.consumer.kafka;
 
-import com.example.consumer.model.TransactionEvent;
-import com.example.consumer.repository.TransactionRepository;
-//import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.consumer.model.TransactionRecord;
+import com.example.consumer.service.TransactionService;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -13,24 +12,24 @@ import tools.jackson.databind.json.JsonMapper;
 public class TransactionListener {
 
     private final JsonMapper jsonMapper;
-    private final TransactionRepository repo;
+    private final TransactionService transactionService;
 
-    public TransactionListener(JsonMapper jsonMapper, TransactionRepository repo) {
+    public TransactionListener(JsonMapper jsonMapper, TransactionService transactionService) {
         this.jsonMapper = jsonMapper;
-        this.repo = repo;
+        this.transactionService = transactionService;
     }
 
     @KafkaListener(topics = "transactions.cleaned.v1")
     public void onMessage(ConsumerRecord<String, String> record, Acknowledgment ack) {
         try {
-            TransactionEvent event = jsonMapper.readValue(record.value(), TransactionEvent.class);
+            TransactionRecord transactionRecord = jsonMapper.readValue(record.value(), TransactionRecord.class);
 
-            int rows = repo.insertIgnoreDuplicate(event);
+            int rows = transactionService.ingestTransaction(transactionRecord);
 
             // commit offset only after DB work succeeds
             ack.acknowledge();
 
-            System.out.println("processed event_id=" + event.event_id
+            System.out.println("processed event_id=" + transactionRecord.event_id
                     + " inserted=" + (rows == 1)
                     + " partition=" + record.partition()
                     + " offset=" + record.offset());

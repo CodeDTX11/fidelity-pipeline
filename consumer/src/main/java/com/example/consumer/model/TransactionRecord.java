@@ -3,7 +3,7 @@ package com.example.consumer.model;
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
-public class TransactionEvent {
+public class TransactionRecord {
     public String event_id;
     public OffsetDateTime event_ts;
     public String customer_id;

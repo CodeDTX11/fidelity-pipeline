@@ -1,6 +1,6 @@
 package com.example.consumer.repository;
 
-import com.example.consumer.model.TransactionEvent;
+import com.example.consumer.model.TransactionRecord;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -16,7 +16,7 @@ public class TransactionRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<TransactionEvent> findAll() {
+    public List<TransactionRecord> findAll() {
         String sql = """
             SELECT event_id, event_ts, customer_id, symbol, side, quantity, price, source_file
             FROM transactions
@@ -24,21 +24,21 @@ public class TransactionRepository {
         """;
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
-            TransactionEvent event = new TransactionEvent();
-            event.event_id = rs.getString("event_id");
-            event.event_ts = rs.getObject("event_ts", OffsetDateTime.class);
-            event.customer_id = rs.getString("customer_id");
-            event.symbol = rs.getString("symbol");
-            event.side = rs.getString("side");
-            event.quantity = rs.getInt("quantity");
-            event.price = rs.getBigDecimal("price");
-            event.source_file = rs.getString("source_file");
-            return event;
+            TransactionRecord record = new TransactionRecord();
+            record.event_id = rs.getString("event_id");
+            record.event_ts = rs.getObject("event_ts", OffsetDateTime.class);
+            record.customer_id = rs.getString("customer_id");
+            record.symbol = rs.getString("symbol");
+            record.side = rs.getString("side");
+            record.quantity = rs.getInt("quantity");
+            record.price = rs.getBigDecimal("price");
+            record.source_file = rs.getString("source_file");
+            return record;
         });
     }
 
     // returns 1 if inserted, 0 if duplicate (ON CONFLICT DO NOTHING)
-    public int insertIgnoreDuplicate(TransactionEvent e) {
+    public int insertIgnoreDuplicate(TransactionRecord record) {
         String sql = """
             INSERT INTO transactions (
               event_id, event_ts, customer_id, symbol, side, quantity, price, source_file, ingested_at
@@ -48,14 +48,14 @@ public class TransactionRepository {
 
         return jdbcTemplate.update(
                 sql,
-                e.event_id,
-                e.event_ts,
-                e.customer_id,
-                e.symbol,
-                e.side,
-                e.quantity,
-                e.price,
-                e.source_file,
+                record.event_id,
+                record.event_ts,
+                record.customer_id,
+                record.symbol,
+                record.side,
+                record.quantity,
+                record.price,
+                record.source_file,
                 OffsetDateTime.now()
         );
     }
