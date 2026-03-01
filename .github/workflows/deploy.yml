@@ -8,24 +8,52 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # Pull the repository contents onto the GitHub-hosted runner.
       - uses: actions/checkout@v4
 
+      # Install Node.js so the React/Vite frontend can be built.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ./frontend/package-lock.json
+
+      # Install JDK 21 for the Spring Boot consumer build.
       - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'temurin'
 
+      # Restore frontend dependencies from the lockfile and produce a production build.
+      - name: Build frontend
+        run: |
+          npm ci
+          npm run build
+        working-directory: ./frontend
+
+      # Package the consumer application jar without running tests.
       - name: Build consumer
-        run: mvn package -DskipTests
+        run: ./mvnw package -DskipTests
         working-directory: ./consumer
+
+      # Ensure the Compose file still resolves cleanly before deploy runs.
+      - name: Validate Docker Compose
+        run: docker compose config
+
+      # Build the frontend, consumer, and producer container images in CI to catch Dockerfile or runtime-environment issues early.
+      - name: Validate Docker images
+        run: docker compose build frontend consumer producer
 
   deploy:
     runs-on: self-hosted
     needs: build
     steps:
+      # Pull the latest repository contents onto the self-hosted deployment runner.
       - uses: actions/checkout@v4
 
+      # Rebuild and start the Compose services on the target machine, then print container status.
       - name: Deploy stack
         run: |
           docker compose up -d --build
