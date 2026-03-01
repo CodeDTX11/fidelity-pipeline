@@ -74,6 +74,13 @@ services:
       SPRING_DATASOURCE_USERNAME: app
       SPRING_DATASOURCE_PASSWORD: app
 
+  frontend:
+    build: ./frontend
+    depends_on:
+      - consumer
+    ports:
+      - "5173:80"
+
   producer:
     build: ./producer
     depends_on:
